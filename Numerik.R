@@ -203,33 +203,33 @@ for (i in 1:15){
 # Gausova eliminace
 
 gauss_jordan_elimination <- function(A, b) {
-  # Pøipojíme b k A, aby se na nìj vztahovaly stejné øádkové operace
+  # Pï¿½ipojï¿½me b k A, aby se na nï¿½j vztahovaly stejnï¿½ ï¿½ï¿½dkovï¿½ operace
   Ab <- cbind(A, b)
   
   n <- length(b)
-  # Pøevedení na horní trojúhelníkovou formu
+  # Pï¿½evedenï¿½ na hornï¿½ trojï¿½helnï¿½kovou formu
   for (i in 1:n) {
-    # Normalizace øádkù
+    # Normalizace ï¿½ï¿½dkï¿½
     a <- Ab[i, ]
     Ab[i, ] <- a / a[i]
-    # Eliminace všech ostatních prvkù ve sloupci
+    # Eliminace vï¿½ech ostatnï¿½ch prvkï¿½ ve sloupci
     for (j in c(1:n)[-i]) {
       Ab[j, ] <- Ab[j, ] - Ab[j, i] * Ab[i, ]
     }
   }
   
-  # Zpìtný chod - získání øešení
+  # Zpï¿½tnï¿½ chod - zï¿½skï¿½nï¿½ ï¿½eï¿½enï¿½
   for (i in n:1) {
     for (j in (1:n)[-i]) {
       Ab[j, ] <- Ab[j, ] - Ab[j, i] * Ab[i, ]
     }
   }
   
-  # Výsledek je v posledním sloupci po transformaci
+  # Vï¿½sledek je v poslednï¿½m sloupci po transformaci
   return(Ab[, n + 1])
 }
 
-# Pøíklad použití
+# Pï¿½ï¿½klad pouï¿½itï¿½
 A <- matrix(c(2, 1, -1, -3, -1, 2, -2, 1, 2), nrow = 3, byrow = TRUE)
 b <- c(8, -11, -3)
 
@@ -347,3 +347,42 @@ for (i in 2:n) {
 
 plot(1:n, Y[, 1], type='l', col='blue', ylab='Position', xlab='Time', main='Damped Harmonic Oscillator')
 
+
+#9. Seminar
+### Metoda Runge-Kutta 4. Å˜Ã¡du
+
+ODEstepRK4 <- function(f,t,y, dt)
+{
+  dtpul <- 0.5 * dt
+  tp <- t * dtpul
+  k1 <- f(t,y)
+  k2 <- f(t+dtpul, y+k1*dtpul)
+  k3 <- f(tp, y+k2*dtpul)
+  k4 <- f(t+dt, yd+dt*k3)
+  return(y+dt*(k1+2*k2+2*k3+k4)/6)
+}
+
+f <- function(x)
+{
+  return(exp(-x*x)*2/sqrt(pi))
+}
+
+trapezodial <- function(f,a,b,n=1)
+{
+  h <- (b-a)/n
+  suma <- f(a)+f(b)
+  if (n>1)
+  {
+    suma <- suma + 2*sum(f(h*(1:(n-1))))
+  }
+  return(0.5*h*suma)
+}
+
+options(digits = 8)
+m <- 4
+a <- sapply(2**(0:m), function(n) trapezodial(f,0,1,n))
+for (j in 1:m)
+{
+  a <- (4**j*a[2:(m+2-j)]-a[1:(m+1-j)])/(4**j-1)
+}
+print(a)
